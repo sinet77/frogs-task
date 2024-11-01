@@ -1,0 +1,19 @@
+.criteria {
+  display: flex;
+  flex-direction: column;
+  color: white;
+  align-items: center;
+  gap: 10px;
+}
+.title {
+  text-decoration: underline;
+  text-underline-offset: 7px;
+}
+
+.male {
+  color: rgb(32, 130, 187);
+}
+
+.female {
+  color: red;
+}

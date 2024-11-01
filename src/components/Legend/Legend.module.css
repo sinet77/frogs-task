@@ -1,0 +1,43 @@
+.legendAndInstructions {
+  display: flex;
+  gap: 50px;
+  align-items: center;
+  background-color: #383838;
+  padding: 35px;
+  border-radius: 10px;
+}
+.title {
+  text-decoration: underline;
+  text-underline-offset: 7px;
+}
+.legendTogether {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.frog {
+  width: 90px;
+  height: 90px;
+  border: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.frogs {
+  display: flex;
+  margin-bottom: 100px;
+  gap: 30px;
+}
+.gender {
+  margin-top: 15px;
+  color: white;
+  font-size: 14px;
+}
+.male {
+  color: rgb(32, 130, 187);
+}
+
+.female {
+  color: red;
+}
