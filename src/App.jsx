@@ -36,40 +36,62 @@ function App() {
   }
 
   function selectFrog(row, column) {
-    if (lake[row][column] !== undefined) {
-      setSelectedFrog({ row, column, frog: lake[row][column] });
+    const frog = lake[row][column];
+    if (frog) {
+      setSelectedFrog(frog);
     }
+  }
+
+  function getJumpDistance(gender) {
+    return gender === "male" ? 3 : 2;
+  }
+
+  function calculateDistance(from, to) {
+    return {
+      distanceByColumns: Math.abs(to.column - from.column),
+      distanceByRows: Math.abs(to.row - from.row),
+    };
+  }
+
+  function isJumpValid(distances, jumpDistance) {
+    const { distanceByColumns, distanceByRows } = distances;
+    return (
+      (distanceByColumns === jumpDistance && distanceByRows === 0) ||
+      (distanceByRows === jumpDistance && distanceByColumns === 0) ||
+      (distanceByColumns === jumpDistance && distanceByRows === jumpDistance)
+    );
+  }
+
+  function updateLake(lake, from, to, frog) {
+    const updatedLake = lake.map((row) => [...row]);
+    updatedLake[from.row][from.column] = undefined;
+    updatedLake[to.row][to.column] = frog;
+    return updatedLake;
   }
 
   function jump() {
     if (!selectedFrog || !selectedField) return;
 
     const { gender } = selectedFrog.frog;
-    let jumpDistance;
-
-    if (gender === "male") {
-      jumpDistance = 3;
-    } else {
-      jumpDistance = 2;
-    }
-
-    const distanceByColumns = Math.abs(
-      selectedField.column - selectedFrog.column
+    const jumpDistance = getJumpDistance(gender);
+    const distances = calculateDistance(
+      { row: selectedFrog.row, column: selectedFrog.column },
+      { row: selectedField.row, column: selectedField.column }
     );
-    const distanceByRows = Math.abs(selectedField.row - selectedFrog.row);
 
-    const isValidJump =
-      (distanceByColumns === jumpDistance && distanceByRows === 0) ||
-      (distanceByRows === jumpDistance && distanceByColumns === 0) ||
-      (distanceByColumns === jumpDistance && distanceByRows === jumpDistance);
+    const isValidJump = isJumpValid(distances, jumpDistance);
 
     if (
       isValidJump &&
       lake[selectedField.row][selectedField.column] === undefined
     ) {
-      const updatedLake = [...lake];
-      updatedLake[selectedFrog.row][selectedFrog.column] = undefined;
-      updatedLake[selectedField.row][selectedField.column] = selectedFrog.frog;
+      const updatedLake = updateLake(
+        lake,
+        { row: selectedFrog.row, column: selectedFrog.column },
+        { row: selectedField.row, column: selectedField.column },
+        selectedFrog.frog
+      );
+      setLake(updatedLake);
       setSelectedFrog(null);
       setSelectedField(null);
     }

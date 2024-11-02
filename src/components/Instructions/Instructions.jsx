@@ -10,12 +10,12 @@ export default function Instructions() {
           field, and click the jump button).
         </li>
         <li>
-          A <span className={styles.male}>male</span> frog can jump up to 3
-          fields (including diagonally).
+          A <span className={styles.male}>male</span> frog can jump 3 fields
+          (including diagonally).
         </li>
         <li>
-          A <span className={styles.female}>female</span> frog can jump up to 2
-          fields (including diagonally).
+          A <span className={styles.female}>female</span> frog can jump 2 fields
+          (including diagonally).
         </li>
         <li>
           Each frog has two characteristics (an array of two elements: tall,
