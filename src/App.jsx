@@ -18,9 +18,6 @@ function App() {
     .fill()
     .map(() => Array(10).fill());
 
-  initialLake[0][0] = createNewFrog(0, 0, "male");
-  initialLake[0][1] = createNewFrog(0, 1, "female");
-
   const [lake, setLake] = useState(initialLake);
   const [selectedFrog, setSelectedFrog] = useState(null);
   const [selectedField, setSelectedField] = useState(null);
@@ -34,6 +31,9 @@ function App() {
       characteristics,
     };
   }
+
+  initialLake[0][0] = createNewFrog(0, 0, "male");
+  initialLake[0][1] = createNewFrog(0, 1, "female");
 
   function selectFrog(row, column) {
     const frog = lake[row][column];
@@ -72,7 +72,7 @@ function App() {
   function jump() {
     if (!selectedFrog || !selectedField) return;
 
-    const { gender } = selectedFrog.frog;
+    const { gender } = selectedFrog;
     const jumpDistance = getJumpDistance(gender);
     const distances = calculateDistance(
       { row: selectedFrog.row, column: selectedFrog.column },
@@ -89,7 +89,11 @@ function App() {
         lake,
         { row: selectedFrog.row, column: selectedFrog.column },
         { row: selectedField.row, column: selectedField.column },
-        selectedFrog.frog
+        {
+          ...selectedFrog,
+          row: selectedField.row,
+          column: selectedField.column,
+        }
       );
       setLake(updatedLake);
       setSelectedFrog(null);
@@ -100,6 +104,15 @@ function App() {
   function selectField(row, column) {
     console.log(`Selected field coordinates: column=${column}, row=${row}`);
     setSelectedField({ row, column });
+  }
+
+  function findAdjacentPositions(row, column) {
+    return [
+      { row: row - 1, column: column }, // up
+      { row: row + 1, column: column }, // down
+      { row: row, column: column - 1 }, // left
+      { row: row, column: column + 1 }, // right
+    ];
   }
 
   function reproduce(mother, father) {
@@ -118,9 +131,6 @@ function App() {
 
     setLake(updatedLake);
   }
-
-  console.log(selectedFrog);
-  console.log(selectedField);
 
   return (
     <div className="background">
