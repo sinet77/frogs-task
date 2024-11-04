@@ -16,11 +16,7 @@ export default function Frog({ frog, isSelected }) {
   }
 
   return (
-    <div
-      className={`frog ${gender === "male" ? "male" : "female"} ${
-        isSelected ? "selected-frog" : ""
-      }`}
-    >
+    <div className={`frog ${gender} ${isSelected ? "selected-frog" : ""}`}>
       <img src={frogImage} alt={`${gender} frog`} />
     </div>
   );

@@ -1,6 +1,5 @@
 import "./App.css";
 import { useState } from "react";
-import Frog from "./components/Frog/Frog";
 import Legend from "./components/Legend/Legend";
 import Title from "./components/Title/Title";
 import {
@@ -12,6 +11,7 @@ import {
   findAdjacentPositions,
   inheritCharacteristics,
 } from "./components/Lake/lake.utils";
+import Lake from "./components/Lake/Lake";
 
 function App() {
   const [frogs, setFrogs] = useState([
@@ -130,39 +130,12 @@ function App() {
           <button onClick={jump}>Jump</button>
           <button onClick={handleReproduceClick}>Reproduce</button>
         </div>
-        <div className="lake">
-          {lake.map((row) =>
-            row.map(({ row, col }) => {
-              const frog = frogs.find(
-                (frog) => frog.row === row && frog.column === col
-              );
-              const isEmptyFieldSelected =
-                selectedField?.row === row &&
-                selectedField?.column === col &&
-                !frog;
-
-              const key = `${row}-${col}`;
-              const className = `cell ${
-                isEmptyFieldSelected ? "selected" : ""
-              }`;
-
-              return (
-                <div
-                  key={key}
-                  className={className}
-                  onClick={() => selectField(row, col)}
-                >
-                  {frog && (
-                    <Frog
-                      frog={frog}
-                      isSelected={selectedFrogs.includes(frog)}
-                    />
-                  )}
-                </div>
-              );
-            })
-          )}
-        </div>
+        <Lake
+          frogs={frogs}
+          selectedField={selectedField}
+          selectField={selectField}
+          selectedFrogs={selectedFrogs}
+        />
       </div>
     </div>
   );
