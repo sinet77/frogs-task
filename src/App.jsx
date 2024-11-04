@@ -19,7 +19,7 @@ function App() {
     .map(() => Array(10).fill());
 
   const [lake, setLake] = useState(initialLake);
-  const [selectedFrog, setSelectedFrog] = useState(null);
+  const [selectedFrogs, setSelectedFrogs] = useState([]);
   const [selectedField, setSelectedField] = useState(null);
 
   function createNewFrog(row, column, gender) {
@@ -38,7 +38,21 @@ function App() {
   function selectFrog(row, column) {
     const frog = lake[row][column];
     if (frog) {
-      setSelectedFrog(frog);
+      const isAlreadySelected = selectedFrogs.some(
+        (selectedFrog) =>
+          selectedFrog.row === row && selectedFrog.column === column
+      );
+
+      if (isAlreadySelected) {
+        setSelectedFrogs((prev) =>
+          prev.filter(
+            (selectedFrog) =>
+              selectedFrog.row !== row || selectedFrog.column !== column
+          )
+        );
+      } else {
+        setSelectedFrogs((prev) => [...prev, frog]);
+      }
     }
   }
 
@@ -70,34 +84,27 @@ function App() {
   }
 
   function jump() {
-    if (!selectedFrog || !selectedField) return;
+    if (selectedFrogs.length === 1 && selectedField) {
+      const frog = selectedFrogs[0];
+      const jumpDistance = getJumpDistance(frog.gender);
+      const distances = calculateDistance(frog, selectedField);
 
-    const { gender } = selectedFrog;
-    const jumpDistance = getJumpDistance(gender);
-    const distances = calculateDistance(
-      { row: selectedFrog.row, column: selectedFrog.column },
-      { row: selectedField.row, column: selectedField.column }
-    );
+      if (isJumpValid(distances, jumpDistance)) {
+        const updatedLake = updateLake(
+          lake,
+          { row: frog.row, column: frog.column },
+          selectedField,
+          frog
+        );
 
-    const isValidJump = isJumpValid(distances, jumpDistance);
-
-    if (
-      isValidJump &&
-      lake[selectedField.row][selectedField.column] === undefined
-    ) {
-      const updatedLake = updateLake(
-        lake,
-        { row: selectedFrog.row, column: selectedFrog.column },
-        { row: selectedField.row, column: selectedField.column },
-        {
-          ...selectedFrog,
-          row: selectedField.row,
-          column: selectedField.column,
-        }
-      );
-      setLake(updatedLake);
-      setSelectedFrog(null);
-      setSelectedField(null);
+        setLake(updatedLake);
+        setSelectedFrogs([]);
+        setSelectedField(null);
+      } else {
+        alert("Jump is invalid.");
+      }
+    } else {
+      alert("Zaznacz dokładnie jedną żabę, aby wykonać skok.");
     }
   }
 
@@ -116,20 +123,53 @@ function App() {
   }
 
   function reproduce(mother, father) {
-    const newRow = mother.row + 1;
-    const newColumn = mother.column;
+    if (!mother || !father) {
+      alert("Select one male and one female frog to reproduce.");
+      return;
+    }
+    const adjacentPositions = findAdjacentPositions(mother.row, mother.column);
 
-    const gender = Math.random() > 0.5 ? "male" : "female";
+    const newPosition = adjacentPositions.find(
+      ({ row, column }) =>
+        row >= 0 &&
+        row < lake.length &&
+        column >= 0 &&
+        column < lake[row].length &&
+        !lake[row][column]
+    );
 
-    const height = mother.characteristics[0];
-    const build = father.characteristics[1];
-    const characteristics = [height, build];
+    if (newPosition) {
+      const gender = Math.random() > 0.5 ? "male" : "female";
 
-    const newFrog = { row: newRow, column: newColumn, gender, characteristics };
-    const updatedLake = [...lake];
-    updatedLake[newRow][newColumn] = newFrog;
+      const height = mother.characteristics[0];
+      const build = father.characteristics[1];
+      const characteristics = [height, build];
 
-    setLake(updatedLake);
+      const newFrog = {
+        row: newPosition.row,
+        column: newPosition.column,
+        gender,
+        characteristics,
+      };
+
+      const updatedLake = [...lake];
+      updatedLake[newPosition.row][newPosition.column] = newFrog;
+
+      setLake(updatedLake);
+    } else {
+      alert("No available space for the new frog.");
+    }
+  }
+
+  function handleReproduceClick() {
+    const maleFrog = selectedFrogs.find((frog) => frog.gender === "male");
+    const femaleFrog = selectedFrogs.find((frog) => frog.gender === "female");
+
+    if (maleFrog && femaleFrog) {
+      reproduce(femaleFrog, maleFrog);
+    } else {
+      alert("Select one male and one female frog to reproduce.");
+    }
   }
 
   return (
@@ -140,15 +180,7 @@ function App() {
         <div className="buttons">
           <h3>Available actions: </h3>
           <button onClick={jump}>Jump</button>
-          <button
-            onClick={() => {
-              if (selectedFrog) {
-                reproduce(selectedFrog.frog, selectedFrog.frog);
-              }
-            }}
-          >
-            Reproduce
-          </button>
+          <button onClick={handleReproduceClick}>Reproduce</button>
         </div>
         <div className="lake">
           {lake.map((row, rowIndex) =>
@@ -172,10 +204,11 @@ function App() {
                 {cell && (
                   <Frog
                     frog={cell}
-                    isSelected={
-                      selectedFrog?.row === rowIndex &&
-                      selectedFrog?.column === columnIndex
-                    }
+                    isSelected={selectedFrogs.some(
+                      (selectedFrog) =>
+                        selectedFrog.row === rowIndex &&
+                        selectedFrog.column === columnIndex
+                    )}
                   />
                 )}
               </div>
