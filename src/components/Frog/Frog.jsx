@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import {
   blue_frog,
   red_frog,
@@ -15,8 +16,10 @@ export default function Frog({ frog, isSelected }) {
     frogImage = gender === "male" ? blue_frog : red_frog;
   }
 
+  const className = clsx("frog", gender, { "selected-frog": isSelected });
+
   return (
-    <div className={`frog ${gender} ${isSelected ? "selected-frog" : ""}`}>
+    <div className={className}>
       <img src={frogImage} alt={`${gender} frog`} />
     </div>
   );

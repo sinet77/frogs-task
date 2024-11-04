@@ -1,5 +1,6 @@
 import { lake } from "./lake.utils";
 import Frog from "../Frog/Frog";
+import clsx from "clsx";
 
 export default function Lake({
   frogs,
@@ -20,7 +21,8 @@ export default function Lake({
             !frog;
 
           const key = `${row}-${col}`;
-          const className = `cell ${isEmptyFieldSelected ? "selected" : ""}`;
+
+          const className = clsx("cell", { selected: isEmptyFieldSelected });
 
           return (
             <div

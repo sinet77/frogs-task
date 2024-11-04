@@ -1,5 +1,7 @@
 import "./App.css";
 import { useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Legend from "./components/Legend/Legend";
 import Title from "./components/Title/Title";
 import {
@@ -23,7 +25,7 @@ function App() {
 
   function jump() {
     if (selectedFrogs.length !== 1 || !selectedField) {
-      alert("Zaznacz dokładnie jedną żabę, aby wykonać skok.");
+      toast.error("Select only one frog to make a jump");
       return;
     }
     const frog = selectedFrogs[0];
@@ -31,7 +33,7 @@ function App() {
     const distances = calculateDistance(frog, selectedField);
 
     if (!isJumpValid(distances, jumpDistance)) {
-      alert("Nieprawidłowy skok.");
+      toast.error("Invalid jump");
       return;
     }
 
@@ -85,7 +87,7 @@ function App() {
     );
 
     if (!newPosition) {
-      alert("No available space for the new frog.");
+      toast.warning("No available space for the new frog.");
       return;
     }
 
@@ -105,7 +107,7 @@ function App() {
 
   function handleReproduceClick() {
     if (selectedFrogs.length !== 2) {
-      alert("Select exactly two frogs to reproduce.");
+      toast.warning("Select exactly two frogs to reproduce.");
       return;
     }
 
@@ -113,7 +115,7 @@ function App() {
     const mother = selectedFrogs.find((frog) => frog.gender === "female");
 
     if (!father || !mother) {
-      alert("Select one male and one female frog to reproduce.");
+      toast.warning("Select one male and one female frog to reproduce.");
       return;
     }
 
@@ -123,12 +125,26 @@ function App() {
   return (
     <div className="background">
       <div className="main">
+        <ToastContainer
+          position="top-left"
+          autoClose={3000}
+          hideProgressBar={false}
+          closeOnClick
+          pauseOnHover
+          draggable
+          limit={10}
+          theme="light"
+        />
         <Title />
         <Legend />
         <div className="buttons">
           <h2>Available actions: </h2>
-          <button onClick={jump}>Jump</button>
-          <button onClick={handleReproduceClick}>Reproduce</button>
+          <button onClick={jump} className="actionButton">
+            Jump
+          </button>
+          <button onClick={handleReproduceClick} className="actionButton">
+            Reproduce
+          </button>
         </div>
         <Lake
           frogs={frogs}
